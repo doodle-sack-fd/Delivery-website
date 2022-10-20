@@ -62,8 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Когда число < 10 , добавлять 0 в начала,передал в updateClock
-    function getZero(num){
-        if(num >= 0 && num < 10) {
+    function getZero(num) {
+        if (num >= 0 && num < 10) {
             return `0${num}`;
         } else {
             return num;
@@ -102,5 +102,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setClock('.timer', deadline);
 
+    // Modal
 
+    const modalShow = document.querySelectorAll('[data-modal]'),
+        modal = document.querySelector('.modal'),
+        modalCloseBtn = document.querySelector('[data-close]');
+
+    // Мы не можем на псевдомассив повешать обработчик событый, нужно перебрать
+    modalShow.forEach(btn => {
+        btn.addEventListener('click', () => {
+            modal.classList.toggle('show');
+            document.body.style.overflow = "hidden";
+        });
+    });
+
+    function closeModal() {
+        modal.classList.toggle('show');
+        document.body.style.overflow = "";
+    }
+
+    modalCloseBtn.addEventListener('click', closeModal);
+
+    // Клик по области за модалкой
+    modal.addEventListener('click', (evt) => {
+        if (evt.target === modal) {
+            closeModal();
+        }
+    });
+    // Закрытие по клавише esc
+    document.addEventListener('keydown', (evt) => {
+        if (evt.code === "Escape" && modal.classList.contains('show')) {
+            closeModal();
+        }
+    });
 });
