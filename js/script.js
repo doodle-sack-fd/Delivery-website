@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // TIMER
 
-    const deadline = '2022-10-21';
+    const deadline = '2023-10-21';
     // Аргумент - deadline
     function getTimeRemaining(endtime) {
         // Разница между датами в колличестве мс.
@@ -139,13 +139,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // const modalTimerId = setTimeout(openModal, 5000);
+    const modalTimerId = setTimeout(openModal, 5000);
 
     function showModalByScroll() {
         // Если высота окна сверху + высота на которой находится клиент, больше чем полная прокрутка (контент), если совпадают, то пользователь долистал до конца 
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
             openModal();
-            window.removeEventListener('scroll', showModalByScroll)
+            window.removeEventListener('scroll', showModalByScroll);
         }
     }
 
@@ -203,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
         9,
         '.menu .container',
+
     ).render();
 
     new MenuItem(
@@ -213,7 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
         14,
         '.menu .container',
         'menu__item',
-        'big'
     ).render();
 
     new MenuItem(
@@ -224,6 +224,62 @@ document.addEventListener('DOMContentLoaded', () => {
         21,
         '.menu .container',
         'menu__item',
-        'big'
     ).render();
+
+    // Forms
+
+    const forms = document.querySelectorAll('form');
+
+    const message = {
+        loading: 'Загрузка...',
+        success: 'Спасибо! Скоро мы с вами свяжемся',
+        failure: 'Что-то пошло не так...'
+    };
+    // Берем все наши формы и под каждую из них подвязываю нашу функцию postData
+
+    forms.forEach(item => {
+        postData(item);
+    });
+
+    // func отвечает за постинг данных
+    function postData(form) {
+        form.addEventListener('submit', (evt) => {
+            evt.preventDefault();
+
+            let statusMessage = document.createElement('div');
+            statusMessage.classList.add('status');
+            statusMessage.textContent = message.loading;
+            form.appendChild(statusMessage);
+
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+            // Если принимаем данные json
+            request.setRequestHeader('Content-type', 'application/json');
+            const formData = new FormData(form);
+
+            const object = {};
+            // Переберем formData и все запушим в пустой object
+            formData.forEach(function (value, key) {
+                object[key] = value;
+            });
+            //Конверитуруем в json
+            const json = JSON.stringify(object);
+            request.send(json);
+
+            // Отслеживаем конечную загрузку нашего запроса
+            request.addEventListener('load', () => {
+                if (request.status === 200) {
+                    console.log(request.response);
+                    statusMessage.textContent = message.success;
+                    // Очищаем форму
+                    form.reset();
+                    setTimeout(() => {
+                        statusMessage.remove();
+                    }, 2000);
+                } else {
+                    statusMessage.textContent = message.failure;
+                }
+            });
+        });
+    }
 });
