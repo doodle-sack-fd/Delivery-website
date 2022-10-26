@@ -255,33 +255,35 @@ document.addEventListener('DOMContentLoaded', () => {
             // form.append(statusMessage);
             form.insertAdjacentElement('afterend', statusMessage);
 
-            const request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
-            // Если принимаем данные json
-            request.setRequestHeader('Content-type', 'application/json');
+
+            // Принимаем/собираем данные из формы
             const formData = new FormData(form);
 
+            // Трансформация formData в json
             const object = {};
             // Переберем formData и все запушим в пустой object
             formData.forEach(function (value, key) {
                 object[key] = value;
             });
-            //Конверитуруем в json
-            const json = JSON.stringify(object);
-            request.send(json);
 
-            // Отслеживаем конечную загрузку нашего запроса
-            request.addEventListener('load', () => {
-                if (request.status === 200) {
-                    console.log(request.response);
+            fetch('server.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(object)
+            }).then(data => data.text())
+                // data, данные которые вернул сервер
+                .then(data => {
+                    console.log(data);
                     showThanksModal(message.success);
                     // Очищаем форму
-                    form.reset();
                     statusMessage.remove();
-                } else {
+                }).catch(() => {
                     showThanksModal(message.failure);
-                }
-            });
+                }).finally(() => {
+                    form.reset();
+                });
         });
     }
 
