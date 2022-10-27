@@ -1,0 +1,22 @@
+{
+  "name": "delivery-site",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doodle-sack-fd/delivery-website-.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/doodle-sack-fd/delivery-website-/issues"
+  },
+  "homepage": "https://github.com/doodle-sack-fd/delivery-website-#readme",
+  "devDependencies": {
+    "json-server": "^0.17.0"
+  }
+}
