@@ -208,6 +208,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+
+    // 2й вариант. 
+
     // getResource('http://localhost:3000/menu')
     //     .then(data => createCard(data));
 
@@ -231,7 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
     //         document.querySelector('.menu .container').append(element);
     //     });
     // }
-
 
     // Forms
 
@@ -261,8 +263,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return await res.json();
     };
 
-
-
     // func отвечает за постинг данных (привязку)
     function bindPostData(form) {
         form.addEventListener('submit', (evt) => {
@@ -276,7 +276,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             // form.append(statusMessage);
             form.insertAdjacentElement('afterend', statusMessage);
-
 
             // Принимаем/собираем данные из формы
             const formData = new FormData(form);
@@ -323,11 +322,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 4000);
     }
 
-    //  json-server db.json - генерирует локалхост
-    fetch('http://localhost:3000/menu')
-        .then(data => data.json())
-        .then(res => console.log(res));
-
     const bntPrev = document.querySelector('.offer__slider-prev'),
         bntNext = document.querySelector('.offer__slider-next'),
         slides = document.querySelectorAll('.offer__slide'),
@@ -363,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
     slider.style.position = 'relative';
 
     // Dots
-    
+
     const indicators = document.createElement('ol'),
         dots = [];
 
@@ -401,25 +395,39 @@ document.addEventListener('DOMContentLoaded', () => {
         opacity: .5;
         transition: opacity .6s ease;
     `;
+
         if (i == 0) {
             dot.style.opacity = 1;
         }
+
         indicators.append(dot);
         dots.push(dot);
     }
+    function deleteNotDigits(str) {
+        return +str.replace(/\D/g, '');
+    }
 
+    function getDotsOpacity() {
+        dots.forEach(dot => dot.style.opacity = '.5');
+        dots[slideIndex - 1].style.opacity = 1;
+    }
 
-
-
+    function showCurrentIndex() {
+        if (slides.length < 10) {
+            current.textContent = `0${slideIndex}`;
+        } else {
+            current.textContent = slideIndex;
+        }
+    }
 
     bntNext.addEventListener('click', () => {
         // Если наш отступ, будет равен ширине 1 слайда, умноженно на кол-во слайдов -1, то ставим офсет в 0. (долистали до конца, возврат в начало)
         // + конвертирует в числовой тип данных, обрезаем px
-
-        if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) { // '500px'
+        // Все не числа, удаляю
+        if (offset == deleteNotDigits(width) * (slides.length - 1)) { // ~'500px'
             offset = 0;
         } else {
-            offset += +width.slice(0, width.length - 2);
+            offset += deleteNotDigits(width);
         }
 
         slidesField.style.transform = `translateX(-${offset}px)`;
@@ -430,24 +438,19 @@ document.addEventListener('DOMContentLoaded', () => {
             slideIndex++;
         }
 
-        if (slides.length < 10) {
-            current.textContent = `0${slideIndex}`;
-        } else {
-            current.textContent = slideIndex;
-        }
+        showCurrentIndex();
 
-        dots.forEach(dot => dot.style.opacity = '.5');
-        dots[slideIndex - 1].style.opacity = 1;
+        getDotsOpacity();
     });
 
     bntPrev.addEventListener('click', () => {
-        // Есои первый слайд
+        // Если первый слайд
         // Возвращаемся к нему 
         if (offset == 0) { // '500px'
-            offset = +width.slice(0, width.length - 2) * (slides.length - 1);
+            offset = deleteNotDigits(width) * (slides.length - 1);
             // Если не первый слайд
         } else {
-            offset -= +width.slice(0, width.length - 2);
+            offset -= deleteNotDigits(width);
         }
 
         slidesField.style.transform = `translateX(-${offset}px)`;
@@ -458,13 +461,9 @@ document.addEventListener('DOMContentLoaded', () => {
             slideIndex--;
         }
 
-        if (slides.length < 10) {
-            current.textContent = `0${slideIndex}`;
-        } else {
-            current.textContent = slideIndex;
-        }
-        dots.forEach(dot => dot.style.opacity = '.5');
-        dots[slideIndex - 1].style.opacity = 1;
+        showCurrentIndex();
+
+        getDotsOpacity();
     });
 
     dots.forEach(dot => {
@@ -473,57 +472,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // slideTo кликнули на 4 октрылось 4
             slideIndex = slideTo;
 
-            offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+            offset = deleteNotDigits(width) * (slideTo - 1);
             slidesField.style.transform = `translateX(-${offset}px)`;
 
-            if (slides.length < 10) {
-                current.textContent = `0${slideIndex}`;
-            } else {
-                current.textContent = slideIndex;
-            }
+            showCurrentIndex();
 
-            dots.forEach(dot => dot.style.opacity = '.5');
-            dots[slideIndex - 1].style.opacity = 1;
+            getDotsOpacity();
         });
     });
-
-    // showSlides(slideIndex);
-    // if (slides.length < 10) {
-    //     total.textContent = `0${slides.length}`;
-    // } else {
-    //     total.textContent = slides.length;
-    // }
-
-    // function showSlides(n) {
-    //     if (n > slides.length) {
-    //         slideIndex = 1;
-    //     }
-
-    //     if (n < 1) {
-    //         slideIndex = slides.length;
-    //     }
-
-    //     slides.forEach((item) => item.style.display = 'none');
-
-    //     slides[slideIndex - 1].style.display = 'block';
 
     if (slides.length < 10) {
         current.textContent = `0${slideIndex}`;
     } else {
         current.textContent = slideIndex;
     }
-    // }
-
-    // function plusSlides(n) {
-    //     showSlides(slideIndex += n);
-    // }
-
-    // bntPrev.addEventListener('click', () => {
-    //     plusSlides(-1);
-    // });
-
-    // bntNext.addEventListener('click', () => {
-    //     plusSlides(1);
-    // });
-
-}); 
+});
